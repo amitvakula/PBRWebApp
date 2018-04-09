@@ -1,0 +1,60 @@
+{% load staticfiles %}
+
+<script src="https://d3js.org/d3.v3.js"></script>
+<script src="{% static "js/jquery-1.12.4.js" %}"></script>
+<script src="{% static "js/jquery-ui.js" %}"></script>
+<script src="{% static "js/jsnetworkx.js" %}"></script>
+<!-- <script src="{% static "js/rangographs.js" %}"></script> -->
+
+<div>
+  <p> Is this working? </p>
+</div>
+
+<div id="#demo-canvas">
+</div>
+
+<script>
+// This is a graph generator
+var G = jsnx.cycleGraph(6);
+// Compute the shortest path between 0 and 4
+var path = jsnx.bidirectionalShortestPath(G, 0, 4);
+// A simple way to color all nodes in the path:
+G.addNodesFrom(path, {color: '#FFF'});
+// Color the start and end differently
+G.node.get(0).color = '#0F0'; // start is green
+G.node.get(4).color = '#F00'; // end is red
+
+jsnx.draw(G, {
+  element: '#demo-canvas',
+  withLabels: true,
+  nodeStyle: {
+    fill: function(d) {
+      return d.data.color || '#AAA'; // any node without color is gray
+    }
+  }
+});
+</script>
+
+<!-- <div id="demo-canvas" class="sidenav affix" data-spy="affix" data-offset-top="165">
+  <svg class="jsnx" pointer-events="all" width="240px" height="200px" style="opacity: 1;">
+    <g><g class="edges"><g class="edge" transform="translate(172.60672278010426,97.5457801913119)rotate(-170.6605847988214)"><path class="line" d="M 12 0.75 L 12 -0.75 L 51.48522620339998 -0.75 L 51.48522620339998 0.75 z" style="fill: rgb(0, 0, 0); stroke-width: 0;"></path></g><g class="edge" transform="translate(172.60672278010426,97.5457801913119)rotate(-127.78445620316626)"><path class="line"
+      d="M 12 0.75 L 12 -0.75 L 47.8759035874823 -0.75 L 47.8759035874823 0.75 z" style="fill: rgb(0, 0, 0); stroke-width: 0;"></path></g><g class="edge" transform="translate(109.96303695383594,87.24322845901504)rotate(97.83167987252688)"><path class="line" d="M 12 0.75 L 12 -0.75 L 51.659951669903556 -0.75 L 51.659951669903556 0.75 z" style="fill: rgb(0, 0, 0); stroke-width: 0;"></path></g><g class="edge"
+      transform="translate(101.28851842019336,150.30940144282584)rotate(-124.4634716587091)"><path class="line" d="M 12 0.75 L 12 -0.75 L 48.30717573901914 -0.75 L 48.30717573901914 0.75 z" style="fill: rgb(0, 0, 0); stroke-width: 0;"></path></g><g class="edge" transform="translate(67.16185108031038,100.58691134136468)rotate(11.896117332343959)"><path class="line" d="M 12 0.75 L 12 -0.75 L 51.925348334336334 -0.75 L 51.925348334336334 0.75 z" style="fill: rgb(0, 0, 0); stroke-width: 0;">
+      </path>
+    </g>
+    <g class="edge" transform="translate(129.71427191816784,113.76434686538884)rotate(-84.42072605871986)">
+      <path class="line" d="M 12 0.75 L 12 -0.75 L 51.84221008397027 -0.75 L 51.84221008397027 0.75 z" style="fill: rgb(0, 0, 0); stroke-width: 0;">
+      </path>
+    </g>
+  </g>
+  <g class="nodes"><g class="node" transform="translate(172.60672278010426,97.5457801913119)scale(1)">
+        <circle class="node-shape" r="10" style="stroke-width: 2; stroke: rgb(51, 51, 51); fill: rgb(0, 255, 0); cursor:pointer;"></circle>
+        <text style="text-anchor: middle; dominant-baseline: central; cursor: pointer; user-select: none; fill: rgb(0, 0, 0);">0</text>
+      </g><g class="node" transform="translate(109.96303695383594,87.24322845901504)scale(1)"><circle class="node-shape" r="10" style="stroke-width: 2; stroke: rgb(51, 51, 51); fill: rgb(170, 170, 170); cursor: pointer;"></circle><text style="text-anchor: middle; dominant-baseline: central; cursor: pointer; user-select: none; fill: rgb(0, 0,
+          0);">1</text>
+        </g><g class="node" transform="translate(101.28851842019336,150.30940144282584)scale(1)"><circle class="node-shape" r="10" style="stroke-width: 2; stroke: rgb(51, 51, 51); fill: rgb(170, 170, 170); cursor: pointer;"></circle><text style="text-anchor: middle; dominant-baseline: central; cursor: pointer; user-select: none; fill: rgb(0, 0, 0);">
+          2</text></g><g class="node" transform="translate(67.16185108031038,100.58691134136468)scale(1)"><circle class="node-shape" r="10" style="stroke-width: 2; stroke: rgb(51, 51, 51); fill: rgb(170, 170, 170); cursor: pointer;"></circle><text style="text-anchor: middle; dominant-baseline: central; cursor: pointer; user-select: none; fill: rgb(0, 0, 0);">3
+          </text></g><g class="node" transform="translate(129.71427191816784,113.76434686538884)scale(1)"><circle class="node-shape" r="10" style="stroke-width: 2; stroke: rgb(51, 51, 51); fill: rgb(255, 0, 0); cursor: pointer;"></circle><text style="text-anchor: middle; dominant-baseline: central; cursor: pointer; user-select: none; fill: rgb(0, 0, 0);">
+            4</text></g><g class="node" transform="translate(135.92119556604018,50.22458067731353)scale(1)"><circle class="node-shape" r="10" style="stroke-width: 2; stroke: rgb(51, 51, 51); fill: rgb(255, 255, 255); cursor: pointer;"></circle><text style="text-anchor: middle; dominant-baseline: central; cursor: pointer; user-select: none; fill: rgb(0, 0, 0);">5</text></g></g></g>
+  </svg>
+</div> -->

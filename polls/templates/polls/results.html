@@ -1,0 +1,29 @@
+{% load staticfiles %}
+
+<script src="{% static "js/jquery-1.12.4.js" %}"></script>
+<script src="{% static "js/jquery-ui.js" %}"></script>
+<script src="{% static "js/rangojquery.js" %}"></script>
+<script src="{% static "js/jsnetworkx.js" %}"></script>
+<script src="{% static "js/rangographs.js" %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static "css/rangojquery.css" %}">
+
+
+<h1>{{ question.question_text }}</h1>
+
+<ul>
+{% for choice in question.choice_set.all %}
+    <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'polls:detail' question.id %}">Vote again?</a>
+
+<button id="btn" onClick="alert('You clicked the button using Javascript.');">
+       Click Me - I run bruh
+</button>
+
+<button id="about-btn"> Click Me - I'm Javascript on Speed</button>
+
+<div id="draggable" class="ui-widget-content">
+  <p>Drag me around</p>
+</div>
