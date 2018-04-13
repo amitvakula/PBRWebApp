@@ -4,11 +4,12 @@
 <script src="{% static "js/jquery-ui.js" %}"></script>
 <script src="{% static "js/rangojquery.js" %}"></script>
 <script src="{% static "js/jsnetworkx.js" %}"></script>
+<script src="{% static "js/d3.js" %}"></script>
 <script src="{% static "js/rangographs.js" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static "css/rangojquery.css" %}">
 
 
-<h1>{{ question.question_text }}</h1>
+<!-- <h1>{{ question.question_text }}</h1>
 
 <ul>
 {% for choice in question.choice_set.all %}
@@ -16,7 +17,7 @@
 {% endfor %}
 </ul>
 
-<a href="{% url 'polls:detail' question.id %}">Vote again?</a>
+<a href="{% url 'polls:detail' question.id %}">Vote again?</a> -->
 
 <button id="btn" onClick="alert('You clicked the button using Javascript.');">
        Click Me - I run bruh

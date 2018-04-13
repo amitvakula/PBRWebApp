@@ -1,23 +1,42 @@
 $(document).ready( function() {
-   // This is a graph generator
-   var G = jsnx.cycleGraph(6);
-   // Compute the shortest path between 0 and 4
-   var path = jsnx.bidirectionalShortestPath(G, 0, 4);
-   // A simple way to color all nodes in the path:
-   G.addNodesFrom(path, {color: '#FFF'});
-   // Color the start and end differently
-   G.node.get(0).color = '#0F0'; // start is green
-   G.node.get(4).color = '#F00'; // end is red
+  // This is a graph generator
+  var G = jsnx.cycleGraph(6);
+  // Compute the shortest path between 0 and 4
+  var path = jsnx.bidirectionalShortestPath(G, 0, 4);
+  // A simple way to color all nodes in the path:
+  G.addNodesFrom(path, {color: '#FFF'});
+  // Color the start and end differently
+  G.node.get(0).color = '#0F0'; // start is green
+  G.node.get(4).color = '#F00'; // end is red
 
-   jsnx.draw(G, {
-     element: '#demo-canvas',
-     withLabels: true,
-     nodeStyle: {
-       fill: function(d) {
-         return d.data.color || '#AAA'; // any node without color is gray
-       }
-     }
- });
+  jsnx.draw(G, {
+    element: '#demo-canvas',
+    withLabels: true,
+    nodeStyle: {
+      fill: function(d) {
+        return d.data.color || '#AAA'; // any node without color is gray
+      }
+    }
+  });
+ //   // This is a graph generator
+ //   var G = jsnx.cycleGraph(6);
+ //   // Compute the shortest path between 0 and 4
+ //   var path = jsnx.bidirectionalShortestPath(G, 0, 4);
+ //   // A simple way to color all nodes in the path:
+ //   G.addNodesFrom(path, {color: '#FFF'});
+ //   // Color the start and end differently
+ //   G.node.get(0).color = '#0F0'; // start is green
+ //   G.node.get(4).color = '#F00'; // end is red
+ //
+ //   jsnx.draw(G, {
+ //     element: '#demo-canvas',
+ //     withLabels: true,
+ //     nodeStyle: {
+ //       fill: function(d) {
+ //         return d.data.color || '#AAA'; // any node without color is gray
+ //       }
+ //     }
+ // });
 
   // var G = new jsnx.Graph();
   //
