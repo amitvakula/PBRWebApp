@@ -80,12 +80,24 @@ G3.addEdgesFrom(edges[0]);
 var color = d3.scale.category20();
 jsnx.draw(G3, {
     element: '#canvas',
+    withLabels: true,
+    labels: "name",
+    labelStyle: {
+    		fill: "black",
+        textAnchor: "middle",
+        dominantBaseline: "central",
+        cursor: "pointer",
+       	"font-size": "9px",
+        "font-weight": "bold",
+    },
+    nodeShape: "circle",
     layoutAttr: {
-        charge: -150,
-        linkDistance: 50
+        charge: -300,
+        linkDistance: 200,
+        linkStrength: 3,
     },
     nodeAttr: {
-        r: 8,
+        r: 50,
         title: function(d) { return d.label;},
         id: function(d) {
             return 'node-' + d.node;
@@ -111,12 +123,34 @@ function highlight_nodes(nodes, on) {
     });
 }
 
+function deleteTree(graph, nodes) {
+		nodes.forEach(function(n) {
+    		return graph.removeNode(n)
+}
+)}
+
+function deleteNode(graph, node) {
+		return graph.removeNode(node)
+}
+
 d3.selectAll('.node').on('mouseover', function(d) {
-    highlight_nodes(d.G.neighbors(d.node).concat(d.node), true);
+   highlight_nodes(d.G.neighbors(d.node).concat(d.node), true);
 });
 
 d3.selectAll('.node').on('mouseout', function(d) {
      highlight_nodes(d.G.neighbors(d.node).concat(d.node), false);
+});
+
+// Delete tree
+d3.selectAll('.node').on('contextmenu', function(d) {
+     deleteTree(d.G, d.G.neighbors(d.node).concat(d.node));
+});
+
+// Delete node only
+d3.selectAll('.node').on('dblclick', function(d) {
+     deleteNode(d.G, d.node);
+     // Use 'contextmenu' for right click
+     // https://developer.mozilla.org/en-US/docs/Web/Events#Standard_events
 });
 });
 
