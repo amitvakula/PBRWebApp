@@ -1,18 +1,21 @@
 {% load staticfiles %}
 
-<!-- <script src="{% static "js/jquery-1.12.4.js" %}"></script>
-<script src="{% static "js/jquery-ui.js" %}"></script>
+<script src="{% static "js/jquery-3.3.1.js" %}"></script>
+<!-- <script src="{% static "js/jquery-ui.js" %}"></script>
 <script src="{% static "js/rangojquery.js" %}"></script>
 <script src="http://d3js.org/d3.v3.js"></script>
 <script src="{% static "js/jsnetworkx.js" %}"></script> -->
-<!-- <script src="{% static "js/rangographs.js" %}"></script> -->
 
 <script src="http://d3js.org/d3.v3.js"></script>
 <script src="{% static "js/jsnetworkx.js" %}"></script>
+<script src="{% static "js/rangographs.js" %}"></script>
 
-<div id="canvas" class="span9"></div>
 
-<script>
+<div id="canvas" style="height: 500;"></div>
+
+<div style="background-color:black; height: 50;"></div>
+
+<!-- <script>
 
 var G = new jsnx.Graph();
 G.addNodesFrom([
@@ -34,16 +37,17 @@ jsnx.draw(G, {
   }
 });
 
-</script>
+</script> -->
 
 <div>
-  <p> Is this working? </p>
+  <p> Graph 1</p>
 </div>
 
 <div id="demo-canvas">
 </div>
 
-<script>
+
+<!-- <script>
 // This is a graph generator
 var G = jsnx.cycleGraph(6);
 // Compute the shortest path between 0 and 4
@@ -63,4 +67,14 @@ jsnx.draw(G, {
     }
   }
 });
-</script>
+
+// If the user clicks in the window, set the background color of <body> to yellow
+function myFunction() {
+G.addNode(2)
+G.addNode(7)
+G.addNode(9)
+
+}
+</script> -->
+
+<!-- <p onclick="myFunction()">Click me to change my text color.</p> -->
