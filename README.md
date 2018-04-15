@@ -10,5 +10,6 @@ Test changes in rangographs.js and graph.html by visiting localhost:8000/polls/1
 
 Current Functionality:
 
-Right click node to delete node and connected nodes
-Double click to delete single node
+1. Right click node to delete node and connected nodes
+
+2. Double click to delete single node
