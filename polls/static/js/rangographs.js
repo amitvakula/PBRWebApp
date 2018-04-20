@@ -154,25 +154,52 @@ d3.selectAll('.node').on('dblclick', function(d) {
 });
 });
 
-$(document).ready( function() {
+$(document).ready( function second() {
   // This is a graph generator
-  var G = new jsnx.cycleGraph(6);
-  // Compute the shortest path between 0 and 4
-  var path = jsnx.bidirectionalShortestPath(G, 0, 4);
+  var G = new jsnx.Graph();
   // A simple way to color all nodes in the path:
-  G.addNodesFrom(path, {color: '#FFF'});
-  // Color the start and end differently
-  G.node.get(0).color = '#0F0'; // start is green
-  G.node.get(4).color = '#F00'; // end is red
+  G.addNode(1, {name: "Module1"}, {fixed: true});
+  G.addNode(2, {name: "Module2"}, {fixed: true});
+  G.addEdge(1,2);
+
+  var width = 50,
+      height = 50;
 
   jsnx.draw(G, {
-    element: '#demo-canvas',
     withLabels: true,
-    nodeStyle: {
-      fill: function(d) {
-        return d.data.color || '#AAA'; // any node without color is gray
+    labels: "name",
+    labelStyle: {
+    		fill: "black",
+        textAnchor: "middle",
+        dominantBaseline: "central",
+        cursor: "pointer",
+       	"font-size": "9px",
+        "font-weight": "bold",
+    },
+    nodeShape: "rect",
+    layoutAttr: {
+        charge: -300,
+        linkDistance: 200,
+        linkStrength: 3,
+    },
+    nodeAttr: {
+        x: -width/2,
+        y: -height/2,
+        width: width,
+        height: height,
+        title: function(d) { return d.name;},
+        id: function(d) {
+            return 'node-' + d.node;
         }
-      },
+    },
+    nodeStyle: {
+        fill: "black",
+        stroke: 'blue'
+    },
+    edgeStyle: {
+        stroke: '#999'
+    },
+    stickyDrag: true
     // weighted: true,
     // nodeShape: "image",
     // nodeAttr: {
@@ -185,5 +212,93 @@ $(document).ready( function() {
     // edgeStyle: {
     //     'stroke-width': 10
     //     }
+    }, true);
+
+    // function explicitlyPosition() {
+    //     node.each(function(d) {
+    //         d.x = 0;
+    //         d.y = 0;
+    //         d.fixed = true;
+    //     });
+    //     tick();
+    //     node.each(function(d) {
+    //         d.fixed = false;
+    //     });
+    //     force.resume();
+    // }
+
+    // function dragstarted(d) {
+    //   d.fx = null;
+    //   d.fy = null;
+    // }
+    //
+    // function dragged(d) {
+    //   d.x = d3.event.x;
+    //   d.y = d3.event.y;
+    // }
+    //
+    // function dragended(d) {
+    //   d.fx = d3.event.x;
+    //   d.fy = d3.event.y;
+    // }
+
+
+
+    // function tick(nodes) {
+    //   nodes.forEach(function(n) {
+    //     d3.select('#edge')
+    //     .attr("x1", function(d) { return d.source.x; })
+    //     .attr("y1", function(d) { return d.source.y; })
+    //     .attr("x2", function(d) { return d.target.x; })
+    //     .attr("y2", function(d) { return d.target.y; });
+    //     d3.select('#node-' + n)
+    //     .attr("cx", function(d) { return d.x; })
+    //     .attr("cy", function(d) { return d.y; });
+    //   });
+    // }
+    //
+    // function position(nodes) {
+    //   nodes.forEach(function(d) {
+    //       d.x = 100;
+    //       d.y = 100;
+    //       d.fixed = true;
+    //   });
+    //   tick(nodes);
+    //   nodes.forEach(function(d){
+    //       d.fixed = false
+    //   });
+    // }
+    //
+    // d3.selectAll('.node').on('click', function(d) {
+    //   position(d.G.neighbors(d.node).concat(d.node));
+    // });
+
+    function highlight_nodes(nodes, on) {
+        nodes.forEach(function(n) {
+            d3.select('#node-' + n).style('fill', function(d) {
+                return on ? '#EEE' : d.data.color;
+            });
+        });
+    }
+
+    d3.select('g').on('dblclick', function(d) {
+        var nodes = G.nodes();
+        var last = nodes.reduce(function(a, b) {
+            return Math.max(a, b);
+        });
+        var max = nodes.reduce(function(a, b) {
+            return Math.max(a, b) + 1;
+        });
+        G.addNode(max, {name: "Module"});
+        G.addEdge(last, max)
     });
+
+    d3.selectAll('.node').on('mouseover', function(d) {
+       highlight_nodes(d.G.neighbors(d.node).concat(d.node), true);
+    });
+
+    d3.selectAll('.node').on('mouseout', function(d) {
+         highlight_nodes(d.G.neighbors(d.node).concat(d.node), false);
+    });
+
 });
