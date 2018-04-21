@@ -10,6 +10,8 @@ Test changes in rangographs.js and graph.html by visiting localhost:8000/polls/1
 
 Current Functionality:
 
-1. Right click node to delete node and connected nodes
+1. Mouseover module to highlight itself and its connected modules
 
-2. Double click to delete single node
+2. Click module to fix highlight of single module
+
+3. Double click background to add module (no connections yet)
