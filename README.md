@@ -14,4 +14,6 @@ Current Functionality:
 
 2. Click module to fix highlight of single module
 
-3. Double click background to add module (no connections yet)
+3. Double click background to add module
+
+4. Click two non-connected nodes to create connection

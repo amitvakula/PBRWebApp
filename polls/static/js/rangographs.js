@@ -177,12 +177,14 @@ $(document).ready( function second() {
         "font-weight": "bold",
     },
     nodeShape: "rect",
+    // nodeShape: "image", - Using image as background of node
     layoutAttr: {
         charge: -300,
         linkDistance: 200,
         linkStrength: 3,
     },
     nodeAttr: {
+        // "xlink:href": "https://github.com/favicon.ico" - Using image as background of node
         x: -width/2,
         y: -height/2,
         width: width,
@@ -199,38 +201,8 @@ $(document).ready( function second() {
     edgeStyle: {
         stroke: '#999'
     },
-    stickyDrag: true
-    // weighted: true,
-    // nodeShape: "image",
-    // nodeAttr: {
-    //     "xlink:href": "https://github.com/favicon.ico",
-    //     width: 20,
-    //     height: 20,
-    //     x: -8,
-    //     y: -8
-    //     },
-    // edgeStyle: {
-    //     'stroke-width': 10
-    //     }
+    stickyDrag: true // Fixes node in place after dragging
     }, true);
-
-    // function highlight_nodes(nodes, on) {
-    //     nodes.forEach(function(n) {
-    //         d3.select('#node-' + n).style('fill', function(d) {
-    //             return on ? 'yellow' : '#EEE';
-    //         });
-    //     });
-    // }
-    //
-    // d3.selectAll('.node').on('mouseover', function(d) {
-    //       highlight_nodes(d.G.neighbors(d.node).concat(d.node), true);
-    // });
-    //
-    // d3.selectAll('.node').on('mouseout', function(d) {
-    //       highlight_nodes(d.G.neighbors(d.node).concat(d.node), false);
-    // });
-
-
 
     // function create_node(d) {
     //   var nodes = d.G.nodes();
@@ -243,7 +215,8 @@ $(document).ready( function second() {
     //   d.G.addNode(max, {name: "Module " + max});
     //   d.G.addEdge(d.node, max);
     // }
-    
+
+    // Used on mouseover and mouseleave to highlight tree of nodes
     function highlight_nodes(nodes, on) {
         nodes.forEach(function(n) {
             d3.select('#node-' + n).style('fill', function(d) {
@@ -251,7 +224,7 @@ $(document).ready( function second() {
             });
         });
     }
-
+    // Used on mousedown to highlight single node
     function highlight_node(node, clicked) {
       d3.selectAll('#node-' + node).style('fill', function(d) {
           return clicked ? 'yellow' : '#EEE';
@@ -259,16 +232,15 @@ $(document).ready( function second() {
     }
 
     var clicked = false;
+    var first = null;
 
     $(".node, .node.fixed").on({
       mouseover:
-
       function() {
-      if (clicked == false) {
       d3.selectAll('.node').on('mouseenter', function(d) {
-          highlight_nodes(d.G.neighbors(d.node).concat(d.node), true);
+        clicked == false ?
+          highlight_nodes(d.G.neighbors(d.node).concat(d.node), true): clicked;
           });
-        }
     },
       mouseout:
       function() {
@@ -277,19 +249,33 @@ $(document).ready( function second() {
            highlight_nodes(d.G.neighbors(d.node).concat(d.node), false)
       }) :
       d3.selectAll('.node').on('mouseleave', function(d) {
-        highlight_nodes(d.G.neighbors(d.node), false);
+        d.G.neighbors(d.node).forEach(function(n) {
+            d.G.node.get(n).highlighted ? clicked : highlight_nodes(d.G.neighbors(d.node), false);
+          }); // Ensures that a highlighted node via mousedown is not unhighlighted by hovering over another module
       });
     },
+    // Clicking a module highlights it
       mousedown:
       function() {
         d3.selectAll('.node, .node.fixed').on('click', function(d) {
-            highlight_node(d.node, clicked);
-            clicked == true ?
-            d.data.highlighted = true:
-            d.data.highlighted = false;
-          console.log(d.data.highlighted);
-          });
-
+          // d.G.neighbors(d.node).forEach(function(n) {
+          //   console.log("Node-" + n + " highlighted = " + d.G.node.get(n).highlighted)
+              if (first == null) {
+              highlight_node(d.node, clicked);
+            }
+            // });
+            if (clicked == true && first == null) {
+              d.data.highlighted = true;
+              first = d.node;
+              console.log(first);
+            } else if (first != null && first != d.node) {
+              console.log(first + " and " + d.node);
+              d.G.addEdge(first, d.node);
+              first = null;
+            } else {
+              d.data.highlighted = false; // changes highlighted dict
+            }
+        });
         clicked ^= true;
     },
 
@@ -301,6 +287,7 @@ $(document).ready( function second() {
     // },
 
     });
+    // Double clicking on the background creates a new module
     d3.selectAll('body').on('dblclick' , function() {
       var last = G.nodes()[G.nodes().length - 1];
       var nodes = G.nodes();
