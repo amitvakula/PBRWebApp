@@ -158,8 +158,8 @@ $(document).ready( function second() {
   // This is a graph generator
   var G = new jsnx.Graph();
   // A simple way to color all nodes in the path:
-  G.addNode(1, {name: "Module1"}, {fixed: true});
-  G.addNode(2, {name: "Module2"}, {fixed: true});
+  G.addNode(1, {name: "Module 1", highlighted: false, input: "Input A", output: "Output A"});
+  G.addNode(2, {name: "Module 2", highlighted: false, input: "Input A", output: "Output B"});
   G.addEdge(1,2);
 
   var width = 50,
@@ -193,7 +193,7 @@ $(document).ready( function second() {
         }
     },
     nodeStyle: {
-        fill: "black",
+        fill: "#EEE", // color is gray
         stroke: 'blue'
     },
     edgeStyle: {
@@ -214,91 +214,103 @@ $(document).ready( function second() {
     //     }
     }, true);
 
-    // function explicitlyPosition() {
-    //     node.each(function(d) {
-    //         d.x = 0;
-    //         d.y = 0;
-    //         d.fixed = true;
+    // function highlight_nodes(nodes, on) {
+    //     nodes.forEach(function(n) {
+    //         d3.select('#node-' + n).style('fill', function(d) {
+    //             return on ? 'yellow' : '#EEE';
+    //         });
     //     });
-    //     tick();
-    //     node.each(function(d) {
-    //         d.fixed = false;
-    //     });
-    //     force.resume();
-    // }
-
-    // function dragstarted(d) {
-    //   d.fx = null;
-    //   d.fy = null;
     // }
     //
-    // function dragged(d) {
-    //   d.x = d3.event.x;
-    //   d.y = d3.event.y;
-    // }
+    // d3.selectAll('.node').on('mouseover', function(d) {
+    //       highlight_nodes(d.G.neighbors(d.node).concat(d.node), true);
+    // });
     //
-    // function dragended(d) {
-    //   d.fx = d3.event.x;
-    //   d.fy = d3.event.y;
-    // }
-
-
-
-    // function tick(nodes) {
-    //   nodes.forEach(function(n) {
-    //     d3.select('#edge')
-    //     .attr("x1", function(d) { return d.source.x; })
-    //     .attr("y1", function(d) { return d.source.y; })
-    //     .attr("x2", function(d) { return d.target.x; })
-    //     .attr("y2", function(d) { return d.target.y; });
-    //     d3.select('#node-' + n)
-    //     .attr("cx", function(d) { return d.x; })
-    //     .attr("cy", function(d) { return d.y; });
-    //   });
-    // }
-    //
-    // function position(nodes) {
-    //   nodes.forEach(function(d) {
-    //       d.x = 100;
-    //       d.y = 100;
-    //       d.fixed = true;
-    //   });
-    //   tick(nodes);
-    //   nodes.forEach(function(d){
-    //       d.fixed = false
-    //   });
-    // }
-    //
-    // d3.selectAll('.node').on('click', function(d) {
-    //   position(d.G.neighbors(d.node).concat(d.node));
+    // d3.selectAll('.node').on('mouseout', function(d) {
+    //       highlight_nodes(d.G.neighbors(d.node).concat(d.node), false);
     // });
 
+
+
+    // function create_node(d) {
+    //   var nodes = d.G.nodes();
+    //   var last = nodes.reduce(function(a, b) {
+    //       return Math.max(a, b);
+    //   });
+    //   var max = nodes.reduce(function(a, b) {
+    //       return Math.max(a, b) + 1;
+    //   });
+    //   d.G.addNode(max, {name: "Module " + max});
+    //   d.G.addEdge(d.node, max);
+    // }
+    
     function highlight_nodes(nodes, on) {
         nodes.forEach(function(n) {
             d3.select('#node-' + n).style('fill', function(d) {
-                return on ? '#EEE' : d.data.color;
+                return on ? 'yellow' : '#EEE';
             });
         });
     }
 
-    d3.select('g').on('dblclick', function(d) {
-        var nodes = G.nodes();
-        var last = nodes.reduce(function(a, b) {
-            return Math.max(a, b);
-        });
-        var max = nodes.reduce(function(a, b) {
-            return Math.max(a, b) + 1;
-        });
-        G.addNode(max, {name: "Module"});
-        G.addEdge(last, max)
-    });
+    function highlight_node(node, clicked) {
+      d3.selectAll('#node-' + node).style('fill', function(d) {
+          return clicked ? 'yellow' : '#EEE';
+      });
+    }
 
-    d3.selectAll('.node').on('mouseover', function(d) {
-       highlight_nodes(d.G.neighbors(d.node).concat(d.node), true);
-    });
+    var clicked = false;
 
-    d3.selectAll('.node').on('mouseout', function(d) {
-         highlight_nodes(d.G.neighbors(d.node).concat(d.node), false);
+    $(".node, .node.fixed").on({
+      mouseover:
+
+      function() {
+      if (clicked == false) {
+      d3.selectAll('.node').on('mouseenter', function(d) {
+          highlight_nodes(d.G.neighbors(d.node).concat(d.node), true);
+          });
+        }
+    },
+      mouseout:
+      function() {
+      clicked == false ?
+      d3.selectAll('.node').on('mouseleave', function(d) {
+           highlight_nodes(d.G.neighbors(d.node).concat(d.node), false)
+      }) :
+      d3.selectAll('.node').on('mouseleave', function(d) {
+        highlight_nodes(d.G.neighbors(d.node), false);
+      });
+    },
+      mousedown:
+      function() {
+        d3.selectAll('.node, .node.fixed').on('click', function(d) {
+            highlight_node(d.node, clicked);
+            clicked == true ?
+            d.data.highlighted = true:
+            d.data.highlighted = false;
+          console.log(d.data.highlighted);
+          });
+
+        clicked ^= true;
+    },
+
+    //   dblclick:
+    //   function() {
+    //     d3.selectAll('.node, .node.fixed').on('dblclick', function(d) {
+    //         create_node(d);
+    //     });
+    // },
+
+    });
+    d3.selectAll('body').on('dblclick' , function() {
+      var last = G.nodes()[G.nodes().length - 1];
+      var nodes = G.nodes();
+      var max = nodes.reduce(function(a, b) {
+          return Math.max(a, b) + 1;
+      });
+      G.addNode(max, {name: "Module " + max});
+       if (clicked == true) {
+          clicked ^= true;
+        }
     });
 
 });
