@@ -23,3 +23,11 @@ Current Functionality:
 Bugs:
 
 1. Newly created nodes can't be highlighted (via click) in the same way as original set of nodes
+
+Plans:
+
+1. Sidebar of modules that can be dragged onto the body of the graph
+
+Extras:
+
+1. Different shapes for different types of modules
