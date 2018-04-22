@@ -258,22 +258,28 @@ $(document).ready( function second() {
       mousedown:
       function() {
         d3.selectAll('.node, .node.fixed').on('click', function(d) {
-          // d.G.neighbors(d.node).forEach(function(n) {
-          //   console.log("Node-" + n + " highlighted = " + d.G.node.get(n).highlighted)
-              if (first == null) {
-              highlight_node(d.node, clicked);
+            if (first == null) {
+            console.log(d);
+            highlight_node(d.node, clicked);
             }
-            // });
             if (clicked == true && first == null) {
               d.data.highlighted = true;
-              first = d.node;
-              console.log(first);
-            } else if (first != null && first != d.node) {
-              console.log(first + " and " + d.node);
-              d.G.addEdge(first, d.node);
+              console.log("Highlighted = " + d.data.highlighted);
+              first = d;
+              console.log("First node = " + first.node);
+            } else if (first != null && first.node != d.node) {
+              console.log(first.node + " and " + d.node);
+              d.G.addEdge(first.node, d.node);
+              highlight_node(first.node, false);
+              first.data.highlighted = false;
+              clicked = false;
               first = null;
             } else {
               d.data.highlighted = false; // changes highlighted dict
+              console.log("Highlighted = " + d.data.highlighted);
+
+              first = null;
+              console.log("First should be null = " + first);
             }
         });
         clicked ^= true;
@@ -299,5 +305,4 @@ $(document).ready( function second() {
           clicked ^= true;
         }
     });
-
 });
