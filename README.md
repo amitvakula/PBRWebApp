@@ -22,6 +22,8 @@ Current Functionality:
 
 4. Click two non-connected nodes to create connection
 
+5. Right-click to delete a node and its connected edges
+
 Bugs:
 
 1. Click events only work after second click
@@ -29,6 +31,8 @@ Bugs:
 Plans:
 
 1. Sidebar or dropdown of modules that can be dragged onto the body of the graph
+
+2. Delete edges by clicking two connected nodes
 
 Extras:
 

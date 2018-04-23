@@ -130,9 +130,7 @@ function deleteTree(graph, nodes) {
 }
 )}
 
-function deleteNode(graph, node) {
-		return graph.removeNode(node)
-}
+
 
 d3.selectAll('.node').on('mouseover', function(d) {
    highlight_nodes(d.G.neighbors(d.node).concat(d.node), true);
@@ -147,20 +145,19 @@ d3.selectAll('.node').on('contextmenu', function(d) {
      deleteTree(d.G, d.G.neighbors(d.node).concat(d.node));
 });
 
-// Delete node only
-d3.selectAll('.node').on('dblclick', function(d) {
-     deleteNode(d.G, d.node);
-     // Use 'contextmenu' for right click
-     // https://developer.mozilla.org/en-US/docs/Web/Events#Standard_events
+
 });
-});
+
+var G = null;
+var clicked = false;
+var first = null;
 
 $(document).ready( function second() {
   // This is a graph generator
-  var G = new jsnx.Graph();
+  G = new jsnx.DiGraph();
 
-  G.addNode(1, {name: "Module 1", highlighted: false, input: "Input A", output: "Output A"});
-  G.addNode(2, {name: "Module 2", highlighted: false, input: "Input A", output: "Output B"});
+  G.addNode(1, {name: "Base", highlighted: false, input: "Input A", output: "Output A"});
+  G.addNode(2, {name: "Base 2", highlighted: false, input: "Input A", output: "Output B"});
   G.addEdge(1,2);
 
   // Defines size of modules
@@ -199,32 +196,20 @@ $(document).ready( function second() {
     },
     nodeStyle: {
         fill: "#EEE", // color is gray - hex shorthand notation
-        stroke: 'blue'
+        stroke: 'blue',
     },
+    withEdgeLabels: true,
+    edgeLabels: function(d) {return d.data.input},
     edgeStyle: {
-        stroke: '#999'
+        stroke: '#999',
+        // fill: "#EEE",
+        "stroke-width": "9",
+        "stroke": "100",
+
     },
+    edgeOffset: 25,
     stickyDrag: true // Fixes node in place after dragging
     }, true);
-
-    // Used on mouseover and mouseleave to highlight tree of nodes
-    function highlight_nodes(nodes, on) {
-        nodes.forEach(function(n) {
-            d3.select('#node-' + n).style('fill', function(d) {
-                return on ? 'yellow' : '#EEE';
-            });
-        });
-    }
-
-    // Used on mousedown to highlight single node
-    function highlight_node(node, clicked) {
-      d3.selectAll('#node-' + node).style('fill', function(d) {
-          return clicked ? 'yellow' : '#EEE';
-      });
-    }
-
-    var clicked = false;
-    var first = null;
 
     $("g").on({
       mouseover:
@@ -240,7 +225,7 @@ $(document).ready( function second() {
       d3.selectAll('.node').on('mouseleave', function(d) {
            highlight_nodes(d.G.neighbors(d.node).concat(d.node), false)
       }) :
-      // Ensures that a highlighted node via mousedown is not unhighlighted by hovering over another module
+      // Ensures that a highlighted node via mousedown is not unhighlighted by hovering over another node
       d3.selectAll('.node').on('mouseleave', function(d) {
         d.G.neighbors(d.node).forEach(function(n) {
             d.G.node.get(n).highlighted ? clicked : highlight_nodes(d.G.neighbors(d.node), false);
@@ -286,40 +271,62 @@ $(document).ready( function second() {
     $('body').on('dblclick' , function() {
       add_node();
     });
-    // Function adds a node higher in number than the highest valued node
-    function add_node() {
-        var last = G.nodes()[G.nodes().length - 1];
-        var nodes = G.nodes();
-        var max = nodes.reduce(function(a, b) {
-            return Math.max(a, b) + 1;
-            });
-        G.addNode(max, {name: "Module " + max, highlighted: false});
-         if (clicked == true) {
-            clicked ^= true;
-            }
-        // Unhighlights all nodes when new one is added
-        G.nodes().forEach(function(n) {
-            G.node.get(n).highlighted = false;
-            highlight_node(n, false);
-            });
-        first = null;
-    }
 
-    // Connects to html element by their ID - see graph.html "dropdown"
-    document.getElementById("ModuleA").onclick = add_node
-    document.getElementById("ModuleB").onclick = add_node
-    document.getElementById("ModuleC").onclick = add_node
-
-    //// Currently obsolete function
-    // function create_node(d) {
-    //   var nodes = d.G.nodes();
-    //   var last = nodes.reduce(function(a, b) {
-    //       return Math.max(a, b);
-    //   });
-    //   var max = nodes.reduce(function(a, b) {
-    //       return Math.max(a, b) + 1;
-    //   });
-    //   d.G.addNode(max, {name: "Module " + max});
-    //   d.G.addEdge(d.node, max);
-    // }
+    // Delete node only
+    $("g").on('contextmenu', '.node', function() {
+    d3.selectAll('.node').on('contextmenu', function(d) {
+        console.log(d.node);
+         deleteNode(d.G, d.node);
+         // Use 'contextmenu' for right click
+         // https://developer.mozilla.org/en-US/docs/Web/Events#Standard_events
+       });
+   });
 });
+
+// Used on mouseover and mouseleave to highlight tree of nodes
+function highlight_nodes(nodes, on) {
+    nodes.forEach(function(n) {
+        d3.select('#node-' + n).style('fill', function(d) {
+            return on ? 'yellow' : '#EEE';
+        });
+    });
+}
+
+// Used on mousedown to highlight single node
+function highlight_node(node, clicked) {
+  d3.selectAll('#node-' + node).style('fill', function(d) {
+      return clicked ? 'yellow' : '#EEE';
+  });
+}
+
+// Function adds a node higher in number than the highest valued node
+function add_node(name) {
+    var last = G.nodes()[G.nodes().length - 1];
+    var nodes = G.nodes();
+    var max = nodes.reduce(function(a, b) {
+        return Math.max(a, b) + 1;
+        });
+    console.log(name);
+    if (typeof name == 'string') {
+      G.addNode(max, {name: name, highlighted: false});
+       if (clicked == true) {
+          clicked ^= true;
+          }
+    }
+    else {
+      G.addNode(max, {name: "Module " + max, highlighted: false});
+       if (clicked == true) {
+          clicked ^= true;
+          }
+    }
+    // Unhighlights all nodes when new one is added
+    G.nodes().forEach(function(n) {
+        G.node.get(n).highlighted = false;
+        highlight_node(n, false);
+        });
+    first = null;
+}
+
+function deleteNode(graph, node) {
+		return graph.removeNode(node)
+}
