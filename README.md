@@ -28,6 +28,8 @@ Bugs:
 
 1. Click events only work after second click
 
+2. Dragging a node activates click events
+
 Plans:
 
 1. Sidebar or dropdown of modules that can be dragged onto the body of the graph

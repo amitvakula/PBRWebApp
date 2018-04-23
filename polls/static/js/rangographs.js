@@ -158,7 +158,7 @@ $(document).ready( function second() {
 
   G.addNode(1, {name: "Base", highlighted: false, input: "Input A", output: "Output A"});
   G.addNode(2, {name: "Base 2", highlighted: false, input: "Input A", output: "Output B"});
-  G.addEdge(1,2);
+  G.addEdge(1,2, {output: "Output A"});
 
   // Defines size of modules
   var width = 50,
@@ -173,7 +173,7 @@ $(document).ready( function second() {
         textAnchor: "middle",
         dominantBaseline: "central",
         cursor: "pointer",
-       	"font-size": "9px",
+       	"font-size": "11px",
         "font-weight": "bold",
     },
     nodeShape: "rect",
@@ -199,11 +199,20 @@ $(document).ready( function second() {
         stroke: 'blue',
     },
     withEdgeLabels: true,
-    edgeLabels: function(d) {return d.data.input},
+    edgeLabels: function(d) {console.log(d); return d.data.output},
+    edgeLabelStyle: {
+    		fill: "black",
+        // textAnchor: "middle",
+        // dominantBaseline: "central",
+        "alignment-baseline": "text-after-edge",
+        cursor: "pointer",
+       	"font-size": "10px",
+        "font-weight": "bold",
+    },
     edgeStyle: {
         stroke: '#999',
         // fill: "#EEE",
-        "stroke-width": "9",
+        "stroke-width": "5",
         "stroke": "100",
 
     },
@@ -248,7 +257,7 @@ $(document).ready( function second() {
             else if (first != null && first.node != d.node) {
               console.log(first.node + " and " + d.node);
 
-              d.G.addEdge(first.node, d.node); // Connects clicked node to second node
+              d.G.addEdge(first.node, d.node, {input: d.data.input, output: first.data.output}); // Connects clicked node to second node
 
               highlight_node(first.node, false); // Unhighlights original node
               first.data.highlighted = false;
@@ -308,13 +317,14 @@ function add_node(name) {
         });
     console.log(name);
     if (typeof name == 'string') {
-      G.addNode(max, {name: name, highlighted: false});
+      G.addNode(max, {name: name, highlighted: false, input: "Input of " + name, output: "Output of " + name});
        if (clicked == true) {
           clicked ^= true;
           }
     }
     else {
-      G.addNode(max, {name: "Module " + max, highlighted: false});
+      name = "Module " + max
+      G.addNode(max, {name: name, highlighted: false, input: "Input of " + name, output: "Output of " + name});
        if (clicked == true) {
           clicked ^= true;
           }
