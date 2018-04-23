@@ -1,3 +1,4 @@
+// Ignore this first event handler - see the second one
 $(document).ready( function first() {
   var G3 = new jsnx.Graph();
 
@@ -157,14 +158,16 @@ d3.selectAll('.node').on('dblclick', function(d) {
 $(document).ready( function second() {
   // This is a graph generator
   var G = new jsnx.Graph();
-  // A simple way to color all nodes in the path:
+
   G.addNode(1, {name: "Module 1", highlighted: false, input: "Input A", output: "Output A"});
   G.addNode(2, {name: "Module 2", highlighted: false, input: "Input A", output: "Output B"});
   G.addEdge(1,2);
 
+  // Defines size of modules
   var width = 50,
       height = 50;
 
+  // JSNX Draw function - see documentation and examples online
   jsnx.draw(G, {
     withLabels: true,
     labels: "name",
@@ -177,14 +180,14 @@ $(document).ready( function second() {
         "font-weight": "bold",
     },
     nodeShape: "rect",
-    // nodeShape: "image", - Using image as background of node
+    // nodeShape: "image", - For using image as background of node
     layoutAttr: {
         charge: -300,
         linkDistance: 200,
         linkStrength: 3,
     },
     nodeAttr: {
-        // "xlink:href": "https://github.com/favicon.ico" - Using image as background of node
+        // "xlink:href": "https://github.com/favicon.ico" - For using image as background of node
         x: -width/2,
         y: -height/2,
         width: width,
@@ -195,7 +198,7 @@ $(document).ready( function second() {
         }
     },
     nodeStyle: {
-        fill: "#EEE", // color is gray
+        fill: "#EEE", // color is gray - hex shorthand notation
         stroke: 'blue'
     },
     edgeStyle: {
@@ -203,18 +206,6 @@ $(document).ready( function second() {
     },
     stickyDrag: true // Fixes node in place after dragging
     }, true);
-
-    // function create_node(d) {
-    //   var nodes = d.G.nodes();
-    //   var last = nodes.reduce(function(a, b) {
-    //       return Math.max(a, b);
-    //   });
-    //   var max = nodes.reduce(function(a, b) {
-    //       return Math.max(a, b) + 1;
-    //   });
-    //   d.G.addNode(max, {name: "Module " + max});
-    //   d.G.addEdge(d.node, max);
-    // }
 
     // Used on mouseover and mouseleave to highlight tree of nodes
     function highlight_nodes(nodes, on) {
@@ -224,6 +215,7 @@ $(document).ready( function second() {
             });
         });
     }
+
     // Used on mousedown to highlight single node
     function highlight_node(node, clicked) {
       d3.selectAll('#node-' + node).style('fill', function(d) {
@@ -234,7 +226,7 @@ $(document).ready( function second() {
     var clicked = false;
     var first = null;
 
-    $(".node, .node.fixed").on({
+    $("g").on({
       mouseover:
       function() {
       d3.selectAll('.node').on('mouseenter', function(d) {
@@ -248,61 +240,86 @@ $(document).ready( function second() {
       d3.selectAll('.node').on('mouseleave', function(d) {
            highlight_nodes(d.G.neighbors(d.node).concat(d.node), false)
       }) :
+      // Ensures that a highlighted node via mousedown is not unhighlighted by hovering over another module
       d3.selectAll('.node').on('mouseleave', function(d) {
         d.G.neighbors(d.node).forEach(function(n) {
             d.G.node.get(n).highlighted ? clicked : highlight_nodes(d.G.neighbors(d.node), false);
-          }); // Ensures that a highlighted node via mousedown is not unhighlighted by hovering over another module
+          });
       });
     },
     // Clicking a module highlights it
-      mousedown:
+      click:
       function() {
         d3.selectAll('.node, .node.fixed').on('click', function(d) {
-            if (first == null) {
-            console.log(d);
-            highlight_node(d.node, clicked);
-            }
+          clicked ^= true;
             if (clicked == true && first == null) {
+              highlight_node(d.node, clicked);
               d.data.highlighted = true;
-              console.log("Highlighted = " + d.data.highlighted);
               first = d;
+
               console.log("First node = " + first.node);
-            } else if (first != null && first.node != d.node) {
+              console.log("Clicked = " + clicked);
+            }
+            else if (first != null && first.node != d.node) {
               console.log(first.node + " and " + d.node);
-              d.G.addEdge(first.node, d.node);
-              highlight_node(first.node, false);
+
+              d.G.addEdge(first.node, d.node); // Connects clicked node to second node
+
+              highlight_node(first.node, false); // Unhighlights original node
               first.data.highlighted = false;
               clicked = false;
-              first = null;
-            } else {
-              d.data.highlighted = false; // changes highlighted dict
-              console.log("Highlighted = " + d.data.highlighted);
-
-              first = null;
-              console.log("First should be null = " + first);
+              first = null; // Connection is complete, no more first node
             }
+            else {
+              d.data.highlighted = false; // Unhighlights originally clicked node
+              highlight_node(d.node, false);
+              first = null;
+
+              console.log("First should be null = " + first);
+              console.log("Clicked = " + clicked);
+              }
         });
-        clicked ^= true;
     },
+  }, '.node');
 
-    //   dblclick:
-    //   function() {
-    //     d3.selectAll('.node, .node.fixed').on('dblclick', function(d) {
-    //         create_node(d);
-    //     });
-    // },
-
-    });
     // Double clicking on the background creates a new module
-    d3.selectAll('body').on('dblclick' , function() {
-      var last = G.nodes()[G.nodes().length - 1];
-      var nodes = G.nodes();
-      var max = nodes.reduce(function(a, b) {
-          return Math.max(a, b) + 1;
-      });
-      G.addNode(max, {name: "Module " + max});
-       if (clicked == true) {
-          clicked ^= true;
-        }
+    $('body').on('dblclick' , function() {
+      add_node();
     });
+    // Function adds a node higher in number than the highest valued node
+    function add_node() {
+        var last = G.nodes()[G.nodes().length - 1];
+        var nodes = G.nodes();
+        var max = nodes.reduce(function(a, b) {
+            return Math.max(a, b) + 1;
+            });
+        G.addNode(max, {name: "Module " + max, highlighted: false});
+         if (clicked == true) {
+            clicked ^= true;
+            }
+        // Unhighlights all nodes when new one is added
+        G.nodes().forEach(function(n) {
+            G.node.get(n).highlighted = false;
+            highlight_node(n, false);
+            });
+        first = null;
+    }
+
+    // Connects to html element by their ID - see graph.html "dropdown"
+    document.getElementById("ModuleA").onclick = add_node
+    document.getElementById("ModuleB").onclick = add_node
+    document.getElementById("ModuleC").onclick = add_node
+
+    //// Currently obsolete function
+    // function create_node(d) {
+    //   var nodes = d.G.nodes();
+    //   var last = nodes.reduce(function(a, b) {
+    //       return Math.max(a, b);
+    //   });
+    //   var max = nodes.reduce(function(a, b) {
+    //       return Math.max(a, b) + 1;
+    //   });
+    //   d.G.addNode(max, {name: "Module " + max});
+    //   d.G.addEdge(d.node, max);
+    // }
 });
