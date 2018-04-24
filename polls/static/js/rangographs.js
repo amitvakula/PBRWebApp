@@ -205,8 +205,8 @@ $(document).ready( function second() {
     		fill: "black",
         // textAnchor: "middle",
         // dominantBaseline: "central",
-        "alignment-baseline": "text-after-edge",
-        cursor: "pointer",
+        "alignment-baseline": "text-after-edge", // places text above edge
+        cursor: "text",
        	"font-size": "10px",
         "font-weight": "bold",
     },
@@ -215,9 +215,8 @@ $(document).ready( function second() {
         // fill: "#EEE",
         "stroke-width": "5",
         "stroke": "100",
-
     },
-    edgeOffset: 25,
+    edgeOffset: 25, // Changes length of edge/connection
     stickyDrag: true // Fixes node in place after dragging
     }, true);
     //// Mouse Events
@@ -287,7 +286,7 @@ $(document).ready( function second() {
     // Delete node only
     $("g").on('contextmenu', '.node', function() {
     d3.selectAll('.node').on('contextmenu', function(d) {
-        console.log(d.node);
+        console.log(d.data.name + "has been deleted");
          deleteNode(d.G, d.node);
          // Use 'contextmenu' for right click
          // https://developer.mozilla.org/en-US/docs/Web/Events#Standard_events
