@@ -340,5 +340,7 @@ function add_node(name) {
 }
 
 function deleteNode(graph, node) {
-		return graph.removeNode(node)
+		graph.removeNode(node)
+    first = null;
+    clicked = false;
 }
