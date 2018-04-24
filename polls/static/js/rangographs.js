@@ -148,6 +148,7 @@ d3.selectAll('.node').on('contextmenu', function(d) {
 
 });
 
+///////// Start here
 var G = null;
 var clicked = false;
 var first = null;
@@ -199,7 +200,7 @@ $(document).ready( function second() {
         stroke: 'blue',
     },
     withEdgeLabels: true,
-    edgeLabels: function(d) {console.log(d); return d.data.output},
+    edgeLabels: function(d) {return d.data.output},
     edgeLabelStyle: {
     		fill: "black",
         // textAnchor: "middle",
@@ -219,8 +220,9 @@ $(document).ready( function second() {
     edgeOffset: 25,
     stickyDrag: true // Fixes node in place after dragging
     }, true);
-
+    //// Mouse Events
     $("g").on({
+      // Hovering over a node highlights itself and its connected nodes until mouseout
       mouseover:
       function() {
       d3.selectAll('.node').on('mouseenter', function(d) {
@@ -228,6 +230,7 @@ $(document).ready( function second() {
           highlight_nodes(d.G.neighbors(d.node).concat(d.node), true): clicked;
           });
     },
+      // Unhighlights nodes after moving mouse out of node, unless node was clicked
       mouseout:
       function() {
       clicked == false ?
@@ -241,7 +244,7 @@ $(document).ready( function second() {
           });
       });
     },
-    // Clicking a module highlights it
+    // Clicking a module highlights it until it is clicked again or another node is clicked
       click:
       function() {
         d3.selectAll('.node, .node.fixed').on('click', function(d) {
@@ -274,7 +277,7 @@ $(document).ready( function second() {
               }
         });
     },
-  }, '.node');
+    }, '.node');
 
     // Double clicking on the background creates a new module
     $('body').on('dblclick' , function() {
@@ -289,7 +292,7 @@ $(document).ready( function second() {
          // Use 'contextmenu' for right click
          // https://developer.mozilla.org/en-US/docs/Web/Events#Standard_events
        });
-   });
+    });
 });
 
 // Used on mouseover and mouseleave to highlight tree of nodes
@@ -310,12 +313,11 @@ function highlight_node(node, clicked) {
 
 // Function adds a node higher in number than the highest valued node
 function add_node(name) {
-    var last = G.nodes()[G.nodes().length - 1];
+    // var last = G.nodes()[G.nodes().length - 1];
     var nodes = G.nodes();
     var max = nodes.reduce(function(a, b) {
         return Math.max(a, b) + 1;
         });
-    console.log(name);
     if (typeof name == 'string') {
       G.addNode(max, {name: name, highlighted: false, input: "Input of " + name, output: "Output of " + name});
        if (clicked == true) {
