@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.urls import reverse
 from django.db.models import F
 from django.views import generic
@@ -7,13 +7,21 @@ from django.utils import timezone
 
 from .models import Choice, Question
 
-class DragView(generic.DetailView):
-    model = Question
-    template_name = 'polls/drag.html'
+def run(request):
+    if request.method == 'GET':
+        return None
+    elif request.method == 'POST':
+        number = request.POST.get('number')
+        data = {"number": number}
+        return HttpResponse(data)
 
 class GraphView(generic.DetailView):
     model = Question
     template_name = 'polls/graph.html'
+
+class DragView(generic.DetailView):
+    model = Question
+    template_name = 'polls/drag.html'
 
 class IndexView(generic.ListView):
     template_name = 'polls/index.html'

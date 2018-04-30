@@ -1,165 +1,15 @@
-// Ignore this first event handler - see the second one
-$(document).ready( function first() {
-  var G3 = new jsnx.Graph();
-
-// patients are green
-G3.addNodesFrom([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], {group:0, color: '#33FF33'});
-// symptoms are red
-G3.addNodesFrom(
-[[21,	{name:"dry mouth"}],
-[22,	{name:"dry lips "}],
-[23,	{name:"dry nose"}],
-[24,	{name:"dry skin"}],
-[25,	{name:"brittle nails"}],
-[26,	{name:"pruritus"}],
-[27,	{name:"hair loss"}],
-[28,	{name:"depression"}],
-[29,	{name:"dry eyes"}],
-[30,	{name:"fatigue"}],
-[31,	{name:"hypertriglyceridemia"}],
-[32,	{name:"vertigo"}],
-[33,	{name:"GI upset"}],
-[34,	{name:"facial redness"}],
-[35,	{name:"weight loss"}]]
-    , {group:1, color: '#FF2255'});
-
-
-edges = [];
-edges.push([[1,	23],
-[1,	25],
-[1,	21],
-[1,	25],
-[2,	30],
-[2,	22],
-[2,	21],
-[3,	21],
-[4,	21],
-[4,	27],
-[5,	31],
-[5,	28],
-[5,	32],
-[5,	29],
-[5,	22],
-[5,	25],
-[6,	24],
-[6,	33],
-[7,	22],
-[7,	24],
-[7,	26],
-[8,	34],
-[8,	35],
-[9,	24],
-[9,	22],
-[9,	25],
-[10,	26],
-[11,	22],
-[11,	25],
-[12,	26],
-[13,	27],
-[13,	22],
-[13,	23],
-[13,	25],
-[14,	27],
-[14,	28],
-[14,	23],
-[15,	22],
-[15,	27],
-[16,	22],
-[16,	26],
-[17,	22],
-[17,	27],
-[17,	25],
-[18,	22],
-[18,	29],
-[19,	22],
-[20,	25],
-[20,	22],
-[20,	21]] );
-
-G3.addEdgesFrom(edges[0]);
-
-var color = d3.scale.category20();
-jsnx.draw(G3, {
-    element: '#canvas',
-    withLabels: true,
-    labels: "name",
-    labelStyle: {
-    		fill: "black",
-        textAnchor: "middle",
-        dominantBaseline: "central",
-        cursor: "pointer",
-       	"font-size": "9px",
-        "font-weight": "bold",
-    },
-    nodeShape: "circle",
-    layoutAttr: {
-        charge: -300,
-        linkDistance: 200,
-        linkStrength: 3,
-    },
-    nodeAttr: {
-        r: 50,
-        title: function(d) { return d.label;},
-        id: function(d) {
-            return 'node-' + d.node;
-        }
-    },
-    nodeStyle: {
-        fill: function(d) {
-            console.log(d.data.color);
-            return d.data.color;
-        },
-        stroke: 'black'
-    },
-    edgeStyle: {
-        stroke: '#999'
-    }
-}, true);
-
-function highlight_nodes(nodes, on) {
-    nodes.forEach(function(n) {
-        d3.select('#node-' + n).style('fill', function(d) {
-            return on ? '#EEE' : d.data.color;
-        });
-    });
-}
-
-function deleteTree(graph, nodes) {
-		nodes.forEach(function(n) {
-    		return graph.removeNode(n)
-}
-)}
-
-
-
-d3.selectAll('.node').on('mouseover', function(d) {
-   highlight_nodes(d.G.neighbors(d.node).concat(d.node), true);
-});
-
-d3.selectAll('.node').on('mouseout', function(d) {
-     highlight_nodes(d.G.neighbors(d.node).concat(d.node), false);
-});
-
-// Delete tree
-d3.selectAll('.node').on('contextmenu', function(d) {
-     deleteTree(d.G, d.G.neighbors(d.node).concat(d.node));
-});
-
-
-});
-
 ///////// Start here
 var G = null;
 var clicked = false;
 var first = null;
 
-$(document).ready( function second() {
+$(document).ready( function() {
   // This is a graph generator
   G = new jsnx.DiGraph();
 
-  G.addNode(1, {name: "Base", highlighted: false, input: "Input A", output: "Output A"});
-  G.addNode(2, {name: "Base 2", highlighted: false, input: "Input A", output: "Output B"});
-  G.addEdge(1,2, {output: "Output A"});
+  G.addNode(1, {name: "Base", highlighted: false, input: "Base Input", output: "Output A"});
+  G.addNode(2, {name: "Base 2", highlighted: false, input: G.node.get(1).output, output: 2});
+  G.addEdge(1,2, {output: G.node.get(1).output});
 
   // Defines size of modules
   var width = 50,
@@ -167,6 +17,7 @@ $(document).ready( function second() {
 
   // JSNX Draw function - see documentation and examples online
   jsnx.draw(G, {
+    element: '#canvas',
     withLabels: true,
     labels: "name",
     labelStyle: {
@@ -216,9 +67,11 @@ $(document).ready( function second() {
         "stroke-width": "5",
         "stroke": "100",
     },
-    edgeOffset: 25, // Changes length of edge/connection
+    edgeOffset: 30, // Changes length of edge/connection
     stickyDrag: true // Fixes node in place after dragging
     }, true);
+
+
     //// Mouse Events
     $("g").on({
       // Hovering over a node highlights itself and its connected nodes until mouseout
@@ -259,7 +112,13 @@ $(document).ready( function second() {
             else if (first != null && first.node != d.node) {
               console.log(first.node + " and " + d.node);
 
-              d.G.addEdge(first.node, d.node, {input: d.data.input, output: first.data.output}); // Connects clicked node to second node
+              // Data Validation
+              if (d.data.input(first.data.output)) {
+                d.G.addEdge(first.node, d.node, {output: d.data.function(first.data.output)}); // Connects clicked node to second node
+              }
+              else {
+                alert("Input is not valid!");
+              }
 
               highlight_node(first.node, false); // Unhighlights original node
               first.data.highlighted = false;
@@ -279,7 +138,7 @@ $(document).ready( function second() {
     }, '.node');
 
     // Double clicking on the background creates a new module
-    $('body').on('dblclick' , function() {
+    $('#canvas').on('dblclick' , function() {
       add_node();
     });
 
@@ -318,18 +177,102 @@ function add_node(name) {
         return Math.max(a, b) + 1;
         });
     if (typeof name == 'string') {
-      G.addNode(max, {name: name, highlighted: false, input: "Input of " + name, output: "Output of " + name});
-       if (clicked == true) {
-          clicked ^= true;
-          }
+      if (name == "Dicomms") { // Dicomms multiplies by 10
+        G.addNode(max, {
+              name: name,
+              highlighted: false,
+              input: function(input) {
+                if (typeof input == "number") {
+                  return true;
+                }
+                else {
+                  console.log(input + " is not a number");
+                  return false;
+                }
+              },
+              output: "Output of " + name,
+              function: function(input) {
+                var value = input * 10;
+                G.node.get(max).output = value;
+                console.log("Output " + G.node.get(max).output + " should = " + value);
+                return value;
+              }
+        });
+      }
+      else if (name == "Align") {
+        G.addNode(max, {
+              name: name,
+              highlighted: false,
+              input: "Input of " + name,
+              output: "Output of " + name,
+              function: function() {
+                var args = arguments;
+                console.log("Args is = " + args)
+                for (var a in args) {
+                  console.log("Arg " + a);
+                }
+                G.node.get(max).output = args;
+              }
+        });
+      }
+      else if (name == "Nifti") { // Nifti combines array
+        G.addNode(max, {
+              name: name,
+              highlighted: false,
+              input: function(input) {
+                if (Array.isArray(input)) {
+                  return true;
+                }
+                else {
+                  console.log(input + " is not an array");
+                  return false;
+                }
+              },
+              output: "Output of " + name,
+              function: function(input) {
+                var value = input.reduce(function(a, b) {return a + b;}, 0);
+                G.node.get(max).output = value;
+                console.log("Output " + G.node.get(max).output + " should = " + value);
+                return value;
+              }
+        });
+      }
+      else if (name == "Sienna") { // Sienna creates array
+        G.addNode(max, {
+              name: name,
+              highlighted: false,
+              input: function(input) {
+                if (typeof input == "number") {
+                  return true;
+                }
+                else {
+                  console.log(input + " is not a number");
+                  return false;
+                }
+              },
+              output: "Output of " + name,
+              function: function(input) {
+                var value = [input, input / 2];
+                G.node.get(max).output = value;
+                console.log("Output " + G.node.get(max).output + " should = " + value);
+                return value;
+              }
+        });
+      }
     }
     else {
       name = "Module " + max
-      G.addNode(max, {name: name, highlighted: false, input: "Input of " + name, output: "Output of " + name});
-       if (clicked == true) {
-          clicked ^= true;
-          }
+      G.addNode(max, {
+            name: name,
+            highlighted: false,
+            input: "Input of " + name,
+            output: "Output of " + name,
+            function: "fxn of " + name,
+          });
     }
+    if (clicked == true) {
+       clicked ^= true;
+       }
     // Unhighlights all nodes when new one is added
     G.nodes().forEach(function(n) {
         G.node.get(n).highlighted = false;
@@ -343,3 +286,60 @@ function deleteNode(graph, node) {
     first = null;
     clicked = false;
 }
+
+$(document).on("click", '.runbtn', function() {
+  // using jQuery
+  function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = jQuery.trim(cookies[i]);
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+  var csrftoken = getCookie('csrftoken');
+  function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+      }
+  });
+
+  $.ajax({
+    // points to the url where your data will be posted
+     url:'polls/1/graphs/run/',
+     // post for security reason
+     type: "POST",
+     // data that you will like to return
+     data: {number : 2},
+     // what to do when the call is success
+     success: function(response)
+        {
+          alert(response);
+        },
+     // what to do when the call is complete ( you can right your clean from code here)
+     complete:function(){},
+     // what to do when there is an error
+     error:function (xhr, textStatus, thrownError){}
+
+    // function print_graph() {
+    //   console.log(G);
+    //   console.log(G.nodes());
+    //   console.log(G.node.get(1));
+    //   console.log(G.edges());
+    // }
+  });
+});

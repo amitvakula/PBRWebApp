@@ -24,11 +24,15 @@ Current Functionality:
 
 5. Right-click to delete a node and its connected edges
 
+6. Added input validation
+
 Bugs:
 
 1. Click events only work after second click
 
 2. Dragging a node activates click events
+
+3. Run button leads to 404 error
 
 Plans:
 

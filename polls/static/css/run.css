@@ -1,0 +1,20 @@
+.runbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    position: fixed;
+    right: 4;
+    bottom: 4;
+}
+
+.run {
+    position: fixed;
+    display: inline-block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.run:hover .runbtn {
+    background-color: #3e8e41;
+}
