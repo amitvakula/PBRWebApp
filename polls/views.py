@@ -9,11 +9,22 @@ from .models import Choice, Question
 
 def run(request):
     if request.method == 'GET':
-        return None
+        return render(request, 'polls/run.html', {
+            'question': "Blah",
+            'error_message': "Headass.",
+        })
     elif request.method == 'POST':
         number = request.POST.get('number')
         data = {"number": number}
-        return HttpResponse(data)
+        return render(request, 'polls/run.html', {
+            'question': "Blah",
+            'error_message': "Headass.",
+        })
+        # return HttpResponseRedirect(reverse('polls:run', number))
+
+class RunView(generic.DetailView):
+    model = Question
+    template_name = 'polls/run.html'
 
 class GraphView(generic.DetailView):
     model = Question

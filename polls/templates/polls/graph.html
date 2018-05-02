@@ -1,5 +1,4 @@
 {% load staticfiles %}
-<form action="" method="post">{% csrf_token %}
 
 <script src="{% static "js/jquery-3.3.1.js" %}"></script>
 <!-- <script src="{% static "js/jquery-ui.js" %}"></script>
@@ -25,10 +24,12 @@
 
 <div id="canvas" style="height: 80%; width:100%; position:fixed;"></div>
 
-<div class="run">
-  <button class="runbtn" >Run</button>
-</div>
-
+<form id="runform" action="run" method="GET">
+  {% csrf_token %}
+  <div class="run">
+    <button class="runbtn" >Run</button>
+  </div>
+</form>
 
 
 <!-- <script>

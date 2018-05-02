@@ -287,59 +287,25 @@ function deleteNode(graph, node) {
     clicked = false;
 }
 
-$(document).on("click", '.runbtn', function() {
-  // using jQuery
-  function getCookie(name) {
-      var cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-          var cookies = document.cookie.split(';');
-          for (var i = 0; i < cookies.length; i++) {
-              var cookie = jQuery.trim(cookies[i]);
-              // Does this cookie string begin with the name we want?
-              if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                  break;
-              }
-          }
-      }
-      return cookieValue;
-  }
-  var csrftoken = getCookie('csrftoken');
-  function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-  }
-
-  $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-              xhr.setRequestHeader("X-CSRFToken", csrftoken);
-          }
-      }
-  });
-
+$(function() {
+  $('form').on('submit', function(e) {
+  e.preventDefault();
   $.ajax({
     // points to the url where your data will be posted
-     url:'polls/1/graphs/run/',
+     url: $(this).attr('action'),
      // post for security reason
-     type: "POST",
+     method: $(this).attr('method'),
      // data that you will like to return
-     data: {number : 2},
+     data: {"number" : 2},
      // what to do when the call is success
      success: function(response)
         {
           alert(response);
         },
      // what to do when the call is complete ( you can right your clean from code here)
-     complete:function(){},
+     complete:function(){alert("yuh");},
      // what to do when there is an error
      error:function (xhr, textStatus, thrownError){}
-
-    // function print_graph() {
-    //   console.log(G);
-    //   console.log(G.nodes());
-    //   console.log(G.node.get(1));
-    //   console.log(G.edges());
-    // }
   });
+});
 });
