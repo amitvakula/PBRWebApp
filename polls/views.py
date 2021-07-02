@@ -29,6 +29,10 @@ class RunView(generic.DetailView):
 class GraphView(generic.DetailView):
     model = Question
     template_name = 'polls/graph.html'
+    
+class WorkflowView(generic.DetailView):
+    model = Question
+    template_name = 'polls/workflow.html'
 
 class DragView(generic.DetailView):
     model = Question

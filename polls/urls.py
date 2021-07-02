@@ -10,8 +10,8 @@ urlpatterns = [
     # path('<int:pk>/drag/', views.DragView.as_view(), name='drag'),
     path('<int:pk>/graphs/', views.GraphView.as_view(), name='graph'),
     path('<int:pk>/graphs/run', views.RunView.as_view(), name='run'),
-
+    path('<int:pk>/workflow/', views.WorkflowView.as_view(), name='workflow')
+    
     # path('<int:pk>/graphs/results', views.RunView.as_view(), name='results'),
-
     # path('<int:question_id>/vote/', views.vote, name='vote'),
 ]

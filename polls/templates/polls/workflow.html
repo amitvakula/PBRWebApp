@@ -8,11 +8,11 @@
 
 <script src="http://d3js.org/d3.v3.js"></script>
 <script src="{% static "js/jsnetworkx.js" %}"></script>
-<script src="{% static "js/rangographs.js" %}"></script>
+<script src="{% static "js/workflowgraphs.js" %}"></script>
 <link rel="stylesheet" href="{% static "css/dropdown.css" %}">
 <link rel="stylesheet" href="{% static "css/run.css" %}">
 
-<div class="dropdown" >
+<!-- <div class="dropdown" >
   <button class="dropbtn">Add Modules</button>
   <div class="dropdown-content">
     <a id="Dicomms" onclick="add_node(this.id)" href="#">Dicomms</a>
@@ -20,16 +20,16 @@
     <a id="Nifti" onclick="add_node(this.id)" href="#">Nifti</a>
     <a id="Sienna" onclick="add_node(this.id)" href="#">Sienna</a>
   </div>
-</div>
+</div> -->
 
 <div id="canvas" style="height: 80%; width:100%; position:fixed;"></div>
 
-<form id="runform" action="run" method="GET">
+<!-- <form id="runform" action="run" method="GET">
   {% csrf_token %}
   <div class="run">
     <button class="runbtn" >Run</button>
   </div>
-</form>
+</form> -->
 
 
 <!-- <script>
