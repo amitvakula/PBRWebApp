@@ -6,43 +6,30 @@ var first = null;
 $(document).ready( function() {
   // This is a graph generator
   G = new jsnx.DiGraph();
-//   G.addNode(1, {name: "New MRI", highlighted: false, input: "Base Input", output: "Processing"});
-//   G.addNode(2, {name: "Send to UCSF PACs", highlighted: false, input:G.node.get(1).output, output: "Upload"});
-//   G.addNode(3, {name: "Download to radiology cluster", highlighted: false, input: G.node.get(2).output, output: "Store"});
-//   G.addNode(4, {name: "Archive to MSPACMAN", highlighted: false, input: G.node.get(3), output: "Upload"});
-//   G.addNode(5, {name: "Download back to radiology cluster", highlighted: false, input: G.node.get(4), output: "Output A"});
-//   G.addNode(6, {name: "MRI Database ", highlighted: false, input: G.node.get(5), output: "Store/Request MRIs"});
-//   G.addNode(7, {name: "Upload to Google Cloud ", highlighted: false, input: G.node.get(6), output: "Upload"});
-//   G.addNode(8, {name: "msID ", highlighted: false, input: G.node.get(7), output: "Get ID"});
-//   G.addNode(9, {name: "Download data to Flywheel ", highlighted: false, input: G.node.get(8), output: "Uploading Data"});
-//   G.addNode(10, {name: "run SIENA or Flywheel", highlighted: false, input: G.node.get(9), output: "Starting Program"});
-//   G.addNode(11, {name: "Put Metric in Google Firestore", highlighted: false, input: G.node.get(10), output: "Store"});
-//   G.addNode(12, {name: "Put files in GCS bucket DB", highlighted: false, input: G.node.get(11), output: "Store"});
   
-    G.addNodesFrom([
-        [1, {name:'New MRI',size: 50, shape: 'rect', color: 'lightblue'}], [2, {name:'Send to UCSF Pacs',shape: 'circle', color: 'lightgreen'}]
-        ]);
-    console.log(G.nodes(true));
-//   G.addEdge(1,2, {output: G.node.get(1).output});
-//   G.addEdge(2,3, {output: G.node.get(2).output});
-//   G.addEdge(3,4, {output: G.node.get(3).output});
-//   G.addEdge(4,5, {output: G.node.get(4).output});
-//   G.addEdge(5,6, {output: G.node.get(5).ouput});
-//   G.addEdge(6,8, {output: G.node.get(6).ouput});
-//   G.addEdge(8,9, {output: G.node.get(9).output})
-//   G.addEdge(5,7, {output: G.node.get(5).output});
-//   G.addEdge(7,9, {output: G.node.get(8).output});
-//   G.addEdge(9,10, {output: G.node.get(5).output});
-//   G.addEdge(10,11, {output: G.node.get(5).output});
-//   G.addEdge(10,12, {output: G.node.get(5).output});
+  G.addNodesFrom([
+      [1, {name:'New MRI', size: 50, color: 'white'}], [2, {name:'Send to UCSF Pacs', color: 'lightgreen'}],
+      [3, {name: "Download to radiology cluster",size: 50, color: 'lightpink'}], [4, {name: "Archive to MSPACMAN", color: 'lightgrey'}],
+      [5, {name: "Download back to radiology cluster", color:'lightpink'}], [6, {name: "MRI Database", color:'white'}],
+      [7, {name: "Upload to Google Cloud", color:'lightblue'}], [8, {name: "msID", color:'purple'}],
+      [9, {name: "Download data to Flywheel", color:'gold'}], [10, {name: "run SIENA or Flywheel", color:'gold'}],
+      [11, {name: "Put Metric in Google Firestore", color:'lightblue'}], [12, {name: "Put files in GCS bucket DB", color:'lightblue'}]
+      ]);
+  console.log(G.nodes(true));
+  
+  G.addEdgesFrom([
+    [1,2], [2,3], [3,4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10], [10,11], [11,12]
+  ])
+ 
 
-  // Defines size of modules
-//   var width = 50,
-//       height = 50;
+//   Defines size of modules
+  var width = 50,
+      height = 50;
 
   // JSNX Draw function - see documentation and examples online
   jsnx.draw(G, {
     element: '#canvas',
+    d3: d3,
     withLabels: true,
     labels: "name",
     labelStyle: {
@@ -53,27 +40,29 @@ $(document).ready( function() {
        	"font-size": "8px",
         "font-weight": "bold",
     },
+    nodeShape: 'circle',
     nodeStyle: {
-        fill: function(d){
-            return d.data.color || '#AAA'; // any node without color is gray
-        },
+        fill: function(d){return d.data.color || '#AAA';},
         stroke: 'blue',
     },
-   
     layoutAttr: {
         charge: -300,
         linkDistance: 200,
         linkStrength: 3,
     },
     nodeAttr: {
+        x: function(d){return -d.data.size/2 || -width/2;},
+        y:  function(d){return -d.data.size/2 || -height/2;},
+        width: function(d){return d.data.size || width;},
+        height: function(d){return d.data.size || height},
 
         r: function(d){
             return d.data.size || 30;
         },
-        title: function(d) { return d.name;},
+        title: function(d) {return d.name;},
         id: function(d) {
             return 'node-' + d.node;
-        }
+        },
     },
     
     withEdgeLabels: true,
@@ -97,7 +86,7 @@ $(document).ready( function() {
     stickyDrag: true // Fixes node in place after dragging
     }, true);
 
-
+    
     //// Mouse Events
     $("g").on({
       // Hovering over a node highlights itself and its connected nodes until mouseout
@@ -134,5 +123,6 @@ function highlight_nodes(nodes, on) {
         });
     });
 }
+
 
 
