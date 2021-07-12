@@ -8,10 +8,10 @@ $(document).ready( function() {
   G = new jsnx.DiGraph();
   
   G.addNodesFrom([
-      [1, {name:'New MRI', size: 50, color: 'white'}], [2, {name:'Send to UCSF Pacs', color: 'lightgreen'}],
+      [1, {name:'New MRI', size: 50, color: '#FFFACD'}], [2, {name:'Send to UCSF Pacs', color: 'lightgreen'}],
       [3, {name: "Download to radiology cluster",size: 50, color: 'lightpink'}], [4, {name: "Archive to MSPACMAN", color: 'lightgrey'}],
-      [5, {name: "Download back to radiology cluster", color:'lightpink'}], [6, {name: "MRI Database", color:'white'}],
-      [7, {name: "Upload to Google Cloud", color:'lightblue'}], [8, {name: "msID", color:'purple'}],
+      [5, {name: "Download back to radiology cluster", color:'lightpink'}], [6, {name: "MRI Database", color:'#FFFACD'}],
+      [7, {name: "Upload to Google Cloud", color:'lightblue'}], [8, {name: "msID", color:'lavender'}],
       [9, {name: "Download data to Flywheel", color:'gold'}], [10, {name: "run SIENA or Flywheel", color:'gold'}],
       [11, {name: "Put Metric in Google Firestore", color:'lightblue'}], [12, {name: "Put files in GCS bucket DB", color:'lightblue'}]
       ]);
@@ -119,7 +119,7 @@ $(document).ready( function() {
 function highlight_nodes(nodes, on) {
     nodes.forEach(function(n) {
         d3.select('#node-' + n).style('fill', function(d) {
-            return on ? 'blue' : '#EEE';
+            return on ? 'lime' : d.data.color;
         });
     });
 }
