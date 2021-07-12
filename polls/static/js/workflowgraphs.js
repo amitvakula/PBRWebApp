@@ -46,9 +46,9 @@ $(document).ready( function() {
         stroke: 'blue',
     },
     layoutAttr: {
-        charge: -300,
-        linkDistance: 200,
-        linkStrength: 3,
+        charge: -1000,
+        linkDistance: 100,
+        linkStrength: 1,
     },
     nodeAttr: {
         x: function(d){return -d.data.size/2 || -width/2;},
@@ -119,7 +119,7 @@ $(document).ready( function() {
 function highlight_nodes(nodes, on) {
     nodes.forEach(function(n) {
         d3.select('#node-' + n).style('fill', function(d) {
-            return on ? 'lime' : d.data.color;
+            return on ? 'aquamarine' : d.data.color;
         });
     });
 }
