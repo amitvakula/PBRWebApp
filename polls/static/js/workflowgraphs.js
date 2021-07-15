@@ -6,7 +6,6 @@ var first = null;
 $(document).ready(function () {
   // This is a graph generator
   G = new jsnx.DiGraph();
-
   G.addNodesFrom([
     [1, { name: "New MRI", size: 50, color: "#FFFACD" }],
     [2, { name: "Send to UCSF Pacs", color: "lightgreen" }],
@@ -149,14 +148,32 @@ $(document).ready(function () {
     },
     ".node"
   );
-
+  var root = d3.select("#node-"+1)
   console.log("hello this is a log");
 
+  //executed when the run button is clicked
+  document.getElementById("runBtn").addEventListener("click",DFS); 
 
-  document.getElementById("runBtn").addEventListener("click",triggerTransistion);
-  function triggerTransistion(){
-    d3.selectAll(".node-shape").style("fill", "green");
+  function triggerTransistion(curr,index){
+    curr
+      .transition().duration(500).delay(500*index)
+      .style("fill", "orange").style('stroke','orange');
+    console.log('done');
   }
+  
+  
+  function DFS(){
+    var size = d3.selectAll('.node').size();
+    var index = 0;
+    
+    while (index <= size){
+      var curr = d3.select('#node-'+index);
+      console.log(curr)
+      triggerTransistion(curr,index);
+      index += 1
+    }
+  }
+  
 });
 
 // Used on mouseover and mouseleave to highlight tree of nodes
