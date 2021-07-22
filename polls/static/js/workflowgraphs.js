@@ -23,7 +23,6 @@ $(document).ready(function () {
     [11, { name: "Put Metric in Google Firestore", color: "lightblue" }],
     [12, { name: "Put files in GCS bucket DB", color: "lightblue" }],
   ]);
-  console.log(G.nodes(true));
 
   G.addEdgesFrom([
     [1, 2],
@@ -134,53 +133,139 @@ $(document).ready(function () {
       mouseout: function () {
         clicked == false
           ? d3.selectAll(".node").on("mouseleave", function (d) {
-              highlight_nodes(d.G.neighbors(d.node).concat(d.node), false);
-            })
+            highlight_nodes(d.G.neighbors(d.node).concat(d.node), false);
+          })
           : // Ensures that a highlighted node via mousedown is not unhighlighted by hovering over another node
-            d3.selectAll(".node").on("mouseleave", function (d) {
-              d.G.neighbors(d.node).forEach(function (n) {
-                d.G.node.get(n).highlighted
-                  ? clicked
-                  : highlight_nodes(d.G.neighbors(d.node), false);
-              });
+          d3.selectAll(".node").on("mouseleave", function (d) {
+            d.G.neighbors(d.node).forEach(function (n) {
+              d.G.node.get(n).highlighted
+                ? clicked
+                : highlight_nodes(d.G.neighbors(d.node), false);
             });
+          });
       },
     },
     ".node"
   );
-  var root = d3.select("#node-"+1)
-  console.log("hello this is a log");
 
-  //executed when the run button is clicked
-  document.getElementById("runBtn").addEventListener("click",DFS); 
+  async function getNewMri() {
+    return new Promise((resolve, reject) => {
+      let validResponse = false;
+      changeColor(1, "orange");
+      window.setTimeout(() => {
+        validResponse = true;
+        if (validResponse) {
+          resolve(validResponse);
+          changeColor(1, "lightgreen");
+        } else
+          reject(() => {
+            console.log("invalid New MRI response");
+            validResponse = false;
+          });
+      }, 3000);
+    });
+  } 
 
-  function triggerTransistion(curr,index){
-    curr
-      .transition().duration(500).delay(500*index)
-      .style("fill", "orange").style('stroke','orange');
-    console.log('done');
-  }
-  
-  
-  function DFS(){
-    var size = d3.selectAll('.node').size();
-    var index = 0;
-    
-    while (index <= size){
-      var curr = d3.select('#node-'+index);
-      console.log(curr)
-      triggerTransistion(curr,index);
-      index += 1
+  async function sendResultsPacs() {
+    console.log("executing task");
+
+    let result = await getNewMri();
+    if (!result) {
+      console.log("stopping chain. Error Occured");
     }
+
+    changeColor(1, "lightgreen");
+    return new Promise((resolve, reject) => {
+      let validResponse = false;
+      changeColor(2, "orange");
+      window.setTimeout(() => {
+        validResponse = true;
+        if (validResponse) {
+          resolve(validResponse);
+          changeColor(2, "lightgreen");
+        } else
+          reject(() => {
+            console.log("invalid New MRI response");
+            validResponse = false;
+          });
+      }, 3000);
+    });
   }
-  
+
+  async function runGraph() {
+    let r = await sendResultsPacs();
+  }
+
+  let btn = document.getElementById("runBtn");
+  btn.addEventListener("click", runGraph);
+
 });
 
 // Used on mouseover and mouseleave to highlight tree of nodes
-function highlight_nodes(nodes,on) {
+function highlight_nodes(nodes, on) {
   nodes.forEach(function (n) {
     d3.select("#node-" + n).style("fill", function (d) {
       return on ? "aquamarine" : d.data.color;
     });
   });
 }
+
+//changes color of a node
+function changeColor(number, color) {
+  d3.select("#node-" + number)
+    .transition()
+    .duration(500)
+    .delay(50)
+    .style("fill", color)
+    .style("stroke", color);
+}
+
+/*let promiseCount = 0;
+  let check = true;
+  let node = 1;
+  function testPromise() {
+    let thisPromiseCount = ++promiseCount;
+    // begin
+    console.log('beforeend', thisPromiseCount + ') Started<br>');
+    // We make a new promise: we promise a numeric count of this promise, starting from 1 (after waiting 3s)
+    let p1 = new Promise((resolve, reject) => {
+      // The executor function is called with the ability to resolve or reject the promise
+      console.log('beforeend', thisPromiseCount + ') Promise constructor<br>');
+
+      // This is only an example to create asynchronism
+      window.setTimeout(function() {
+          // We fulfill the promise !
+          resolve(thisPromiseCount);
+      }, Math.random() * 9000 + 1000);
+    });
+
+
+    for (current in G.nodes()){
+      p1.then(function(val) {
+        // Log the fulfillment value
+        console.log('beforeend', val + ') Promise fulfilled<br>');
+        changeColor(node,'lightgreen');
+        node += 1;
+        console.log(node)
+      }).catch((reason) => {
+        // Log the rejection reason
+        console.log(`Handle rejected promise (${reason}) here.`);
+        check = false;
+      });
+      // end
+      console.log( thisPromiseCount + ') Promise made<br>');
+      changeColor(node,'orange');
+    }
+
+
+  }
+
+
+
+  if ("Promise" in window) {
+    let btn = document.getElementById("runBtn");
+    btn.addEventListener("click",testPromise);
+  } else {
+
+    console.log("Live example not available as your browser doesn't support the <code>Promise<code> interface.");
+  }*/
