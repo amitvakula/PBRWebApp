@@ -118,97 +118,90 @@ $(document).ready(function () {
     true
   );
 
-  //// Mouse Events
-  $("g").on(
-    {
-      // Hovering over a node highlights itself and its connected nodes until mouseout
-      mouseover: function () {
-        d3.selectAll(".node").on("mouseenter", function (d) {
-          clicked == false
-            ? highlight_nodes(d.G.neighbors(d.node).concat(d.node), true)
-            : clicked;
-        });
-      },
-      // Unhighlights nodes after moving mouse out of node, unless node was clicked
-      mouseout: function () {
-        clicked == false
-          ? d3.selectAll(".node").on("mouseleave", function (d) {
-            highlight_nodes(d.G.neighbors(d.node).concat(d.node), false);
-          })
-          : // Ensures that a highlighted node via mousedown is not unhighlighted by hovering over another node
-          d3.selectAll(".node").on("mouseleave", function (d) {
-            d.G.neighbors(d.node).forEach(function (n) {
-              d.G.node.get(n).highlighted
-                ? clicked
-                : highlight_nodes(d.G.neighbors(d.node), false);
-            });
-          });
-      },
-    },
-    ".node"
-  );
+  // //// Mouse Events
+  // $("g").on(
+  //   {
+  //     // Hovering over a node highlights itself and its connected nodes until mouseout
+  //     mouseover: function () {
+  //       d3.selectAll(".node").on("mouseenter", function (d) {
+  //         clicked == false
+  //           ? highlight_nodes(d.G.neighbors(d.node).concat(d.node), true)
+  //           : clicked;
+  //       });
+  //     },
+  //     // Unhighlights nodes after moving mouse out of node, unless node was clicked
+  //     mouseout: function () {
+  //       clicked == false
+  //         ? d3.selectAll(".node").on("mouseleave", function (d) {
+  //             highlight_nodes(d.G.neighbors(d.node).concat(d.node), false);
+  //           })
+  //         : // Ensures that a highlighted node via mousedown is not unhighlighted by hovering over another node
+  //           d3.selectAll(".node").on("mouseleave", function (d) {
+  //             d.G.neighbors(d.node).forEach(function (n) {
+  //               d.G.node.get(n).highlighted
+  //                 ? clicked
+  //                 : highlight_nodes(d.G.neighbors(d.node), false);
+  //             });
+  //           });
+  //     },
+  //   },
+  //   ".node"
+  // );
 
-  async function getNewMri() {
+
+  async function currentTask(node,apiList) {
     return new Promise((resolve, reject) => {
       let validResponse = false;
-      changeColor(1, "orange");
+      changeColor(node, "orange");
       window.setTimeout(() => {
-        validResponse = true;
-        if (validResponse) {
-          resolve(validResponse);
-          changeColor(1, "lightgreen");
-        } else
-          reject(() => {
-            console.log("invalid New MRI response");
-            validResponse = false;
-          });
-      }, 3000);
-    });
-  } 
-
-  async function sendResultsPacs() {
-    console.log("executing task");
-
-    let result = await getNewMri();
-    if (!result) {
-      console.log("stopping chain. Error Occured");
-    }
-
-    changeColor(1, "lightgreen");
-    return new Promise((resolve, reject) => {
-      let validResponse = false;
-      changeColor(2, "orange");
-      window.setTimeout(() => {
-        validResponse = true;
-        if (validResponse) {
-          resolve(validResponse);
-          changeColor(2, "lightgreen");
-        } else
-          reject(() => {
-            console.log("invalid New MRI response");
-            validResponse = false;
-          });
+      fetch(apiList[node - 1])
+        .then(resp => resp.json())
+        .then(data => {
+          console.log(data);
+          resolve(true);
+          changeColor(node, "lightgreen");
+        })
+        .catch(() => {
+          console.log('error exposed. Exiting run phase');
+          reject(false);
+          changeColor(node,"red");
+        })
       }, 3000);
     });
   }
 
+  
+
+  //function to run the tasks
   async function runGraph() {
-    let r = await sendResultsPacs();
+    let apiList = [
+      "https://api.sampleapis.com/switch/games",
+      //'https://error',
+      "https://api.sampleapis.com/coffee/hot",
+      "https://api.sampleapis.com/coffee/iced",
+      "https://api.sampleapis.com/beers/ale",
+      'https://api.sampleapis.com/beers/stouts',
+    ];
+
+    let node = 1;
+    while (node <= 12) {
+      let r = await currentTask(node,apiList);
+      node += 1;
+    }
   }
 
   let btn = document.getElementById("runBtn");
   btn.addEventListener("click", runGraph);
-
 });
 
-// Used on mouseover and mouseleave to highlight tree of nodes
-function highlight_nodes(nodes, on) {
-  nodes.forEach(function (n) {
-    d3.select("#node-" + n).style("fill", function (d) {
-      return on ? "aquamarine" : d.data.color;
-    });
-  });
-}
+//Used on mouseover and mouseleave to highlight tree of nodes
+// function highlight_nodes(nodes, on) {
+//   nodes.forEach(function (n) {
+//     d3.select("#node-" + n).style("fill", function (d) {
+//       return on ? "aquamarine" : d.data.color;
+//     });
+//   });
+// }
 
 //changes color of a node
 function changeColor(number, color) {
@@ -219,4 +212,3 @@ function changeColor(number, color) {
     .style("fill", color)
     .style("stroke", color);
 }
-
