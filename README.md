@@ -10,7 +10,7 @@ To run, go to PBRWebApp directory, type "python manage.py runserver"
 
 Test changes in rangographs.js and graph.html by visiting localhost:8000/polls/1/graphs
 
-Test new "run" functionality in the "workflow view" by visiting localhost:8000/polls/1/workflow
+_Test new "run" functionality in the "workflow view" by visiting localhost:8000/polls/1/workflow_
 
 
 For easier debugging, use developer tools in Google Chrome to read console
@@ -29,7 +29,7 @@ Current Functionality:
 
 6. Added input validation
 
-7. Added run Nodes functionality 
+_7. Added run Nodes functionality _
 
 Bugs:
 
